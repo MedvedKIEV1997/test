@@ -1,12 +1,15 @@
-import React from 'react';
-
-
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Employees from "./routes/employees/employees";
+import Search from "./routes/search";
 
 function App() {
   return (
-    <div>
-      
-    </div>
+    <Routes>
+      <Route path="/" element={<Search />}>
+        <Route path="/:name" element={<Employees />} />
+      </Route>
+    </Routes>
   );
 }
 

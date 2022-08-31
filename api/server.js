@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
 
@@ -43,6 +44,12 @@ const employees = [
   },
 ];
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+
 app.get("/employees", (req, res) => {
   res.json(employees);
 });
@@ -52,7 +59,12 @@ app.get("/employees/:name", (req, res) => {
   const employee = employees.find((el) =>
     el.name.toLocaleLowerCase().includes(name.toLocaleLowerCase())
   );
-  res.json(employee);
+
+  if (employee) {
+    res.json(employee);
+  } else {
+    res.sendStatus(404);
+  }
 });
 
 app.listen(PORT, () => {
