@@ -1,7 +1,7 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Employees from "./routes/employees/employees";
-import Search from "./routes/search";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Employees from './components/employees/employees.component';
+import Search from './components/search/search.component';
 
 function App() {
   return (

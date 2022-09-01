@@ -1,0 +1,19 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start --prefix api & npm start --prefix my-app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MedvedKIEV1997/test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MedvedKIEV1997/test/issues"
+  },
+  "homepage": "https://github.com/MedvedKIEV1997/test#readme"
+}
