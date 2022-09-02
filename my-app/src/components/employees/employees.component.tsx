@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/esm/Container';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
     MainText,
@@ -9,30 +8,24 @@ import {
 } from '../../styled/employees/employees.styles';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Button, Toast, ToastContainer } from 'react-bootstrap';
+import useTypedSelector from '../../hooks/useTypedSelectors';
 import {
     selectEmployee,
-    getEmployeeFetch,
     selectSubordinatesToShow
 } from '../../store/employee/employeeSlice';
-
-export type Employee = {
-    name: string;
-    controls: string[];
-    id: number;
-};
+import useActions from '../../hooks/useActions';
 
 const Employees = () => {
     const [show, setShow] = useState(false);
     const { id } = useParams();
     const url = window.location.href;
-
-    const employee: Employee = useSelector(selectEmployee);
-    const subordinates: Employee[] = useSelector(selectSubordinatesToShow);
-    const dispatch = useDispatch();
+    const actions = useActions();
+    const employee = useTypedSelector(selectEmployee);
+    const subordinates = useTypedSelector(selectSubordinatesToShow);
 
     useEffect(() => {
-        dispatch(getEmployeeFetch(id));
-    }, [dispatch, id]);
+        actions.getEmployee({ id: Number(id) });
+    }, [id]);
 
     return (
         <Container className="my-5">
