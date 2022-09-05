@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/MedvedKIEV1997/test/issues"
   },
-  "homepage": "https://github.com/MedvedKIEV1997/test#readme"
+  "homepage": "https://github.com/MedvedKIEV1997/test#readme",
+  "devDependencies": {
+    "@types/styled-components": "^5.1.26"
+  }
 }

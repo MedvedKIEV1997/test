@@ -2,25 +2,24 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import { Col, Form, Row, Stack } from 'react-bootstrap';
 import Button from 'react-bootstrap/esm/Button';
 import Container from 'react-bootstrap/esm/Container';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { Link, Outlet } from 'react-router-dom';
-import {
-    getSearchFetch,
-    selectSearch
-} from '../../store/employee/employeeSlice';
-import { Employee } from '../employees/employees.component';
+import useActions from '../hooks/useActions';
+import useTypedSelector from '../hooks/useTypedSelectors';
+import { selectSearch } from '../redux/ducks/employee.duck';
 
 const Search = () => {
     const [search, setSearch] = useState('');
-    const dispatch = useDispatch();
-    const searched: Employee[] = useSelector(selectSearch);
+
+    const searched = useTypedSelector(selectSearch);
+    const actions = useActions();
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
     };
 
     const handleSubmit = (e: FormEvent<HTMLElement>) => {
         e.preventDefault();
-        dispatch(getSearchFetch(search));
+        actions.searchEmployees({ name: search });
         setSearch('');
     };
 
