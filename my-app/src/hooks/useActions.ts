@@ -1,10 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import {
-    searchEmployees,
-    getEmployee
-} from '../store/employee/employeeActions';
+import { searchEmployees, getEmployee } from '../redux/ducks/employee.duck';
 
 const useActions = () => {
     const dispatch = useDispatch();

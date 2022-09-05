@@ -1,7 +1,5 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Employees from './components/employees/employees.component';
-import Search from './components/search/search.component';
+import { Employees, Search } from './components/index';
 
 function App() {
     return (

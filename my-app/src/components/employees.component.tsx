@@ -2,18 +2,15 @@ import { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/esm/Container';
 import { useParams } from 'react-router-dom';
 
-import {
-    MainText,
-    SecondaryText
-} from '../../styled/employees/employees.styles';
+import { MainText, SecondaryText } from '../styled/employees.styles';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Button, Toast, ToastContainer } from 'react-bootstrap';
-import useTypedSelector from '../../hooks/useTypedSelectors';
+import useTypedSelector from '../hooks/useTypedSelectors';
 import {
     selectEmployee,
     selectSubordinatesToShow
-} from '../../store/employee/employeeSlice';
-import useActions from '../../hooks/useActions';
+} from '../redux/ducks/employee.duck';
+import useActions from '../hooks/useActions';
 
 const Employees = () => {
     const [show, setShow] = useState(false);
@@ -25,6 +22,7 @@ const Employees = () => {
 
     useEffect(() => {
         actions.getEmployee({ id: Number(id) });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     return (

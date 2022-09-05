@@ -4,9 +4,9 @@ import Button from 'react-bootstrap/esm/Button';
 import Container from 'react-bootstrap/esm/Container';
 
 import { Link, Outlet } from 'react-router-dom';
-import useActions from '../../hooks/useActions';
-import useTypedSelector from '../../hooks/useTypedSelectors';
-import { selectSearch } from '../../store/employee/employeeSlice';
+import useActions from '../hooks/useActions';
+import useTypedSelector from '../hooks/useTypedSelectors';
+import { selectSearch } from '../redux/ducks/employee.duck';
 
 const Search = () => {
     const [search, setSearch] = useState('');
