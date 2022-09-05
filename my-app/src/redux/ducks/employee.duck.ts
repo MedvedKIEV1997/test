@@ -20,30 +20,29 @@ export type GetEmployeePayload = {
 
 type InitialState = {
     employee: Employee | null;
+    allEmployees: Employee[];
     subordinates: number[];
     subordinatesToShow: Employee[];
-    search: Employee[];
 };
 
 const initialState: InitialState = {
     employee: null,
+    allEmployees: [],
     subordinates: [],
-    subordinatesToShow: [],
-    search: []
+    subordinatesToShow: []
 };
 
 const employeeSlice = createSlice({
     name: 'employee',
     initialState,
     reducers: {
-        setSearch: (state, { payload }: PayloadAction<Employee[]>) => {
-            state.search = payload;
-        },
-
         setEmployee: (state, { payload }: PayloadAction<Employee>) => {
             state.subordinatesToShow = [];
             state.employee = payload;
             state.subordinates = payload.controls;
+        },
+        setEmployees: (state, { payload }: PayloadAction<Employee[]>) => {
+            state.allEmployees = payload;
         },
         setSubordinates: (state, { payload }: PayloadAction<Employee[]>) => {
             state.subordinatesToShow = [
@@ -59,29 +58,29 @@ const sliceActions = employeeSlice.actions;
 
 export const selectEmployee = (state: RootState) => state.employee.employee;
 
+export const selectEmployees = (state: RootState) =>
+    state.employee.allEmployees;
+
 export const selectSubordinates = (state: RootState) =>
     state.employee.subordinates;
 
 export const selectSubordinatesToShow = (state: RootState) =>
     state.employee.subordinatesToShow;
 
-export const selectSearch = (state: RootState) => state.employee.search;
-
 export const searchEmployees =
     createAction<SearchEmployeesPayload>('searchEmployees');
 
 export const getEmployee = createAction<GetEmployeePayload>('getEmployee');
 
-function* searchEmployeesAsync(action: ReturnType<typeof searchEmployees>) {
-    const {
-        payload: { name }
-    } = action;
+export const getEmployees = createAction('getEmployees');
+
+function* getEmployeesAsync() {
     try {
         const { data }: AxiosResponse<Employee[]> = yield call(
             axios.get,
-            `http://localhost:8000/employees/search/${name}`
+            `http://localhost:8000/employees`
         );
-        yield put(sliceActions.setSearch(data));
+        yield put(sliceActions.setEmployees(data));
     } catch (error) {
         console.log(error);
     }
@@ -130,16 +129,15 @@ function* getSubordinatesAsync(): any {
     }
 }
 
-function* watchSearch() {
-    yield takeLatest(searchEmployees.type, searchEmployeesAsync);
-}
-
 function* watchGetEmployee() {
     yield takeLatest(getEmployee.type, getEmployeeAsync);
 }
+function* watchGetEmployees() {
+    yield takeLatest(getEmployees.type, getEmployeesAsync);
+}
 
 export function* employeeSaga() {
-    yield all([call(watchGetEmployee), call(watchSearch)]);
+    yield all([call(watchGetEmployee), call(watchGetEmployees)]);
 }
 
 export default employeeSlice.reducer;

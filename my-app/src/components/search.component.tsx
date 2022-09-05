@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Col, Form, Row, Stack } from 'react-bootstrap';
 import Button from 'react-bootstrap/esm/Button';
 import Container from 'react-bootstrap/esm/Container';
@@ -6,47 +6,47 @@ import Container from 'react-bootstrap/esm/Container';
 import { Link, Outlet } from 'react-router-dom';
 import useActions from '../hooks/useActions';
 import useTypedSelector from '../hooks/useTypedSelectors';
-import { selectSearch } from '../redux/ducks/employee.duck';
+import { Employee, selectEmployees } from '../redux/ducks/employee.duck';
 
 const Search = () => {
-    const [search, setSearch] = useState('');
+    const [employeesToShow, setEmployeesToShow] = useState<Employee[]>([]);
 
-    const searched = useTypedSelector(selectSearch);
+    const allEmployees = useTypedSelector(selectEmployees);
     const actions = useActions();
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
+        setEmployeesToShow(
+            allEmployees.filter((el) =>
+                el.name
+                    .toLocaleLowerCase()
+                    .includes(e.target.value.toLocaleLowerCase())
+            )
+        );
     };
 
-    const handleSubmit = (e: FormEvent<HTMLElement>) => {
-        e.preventDefault();
-        actions.searchEmployees({ name: search });
-        setSearch('');
-    };
+    useEffect(() => {
+        actions.getEmployees();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        setEmployeesToShow(allEmployees);
+    }, [allEmployees]);
 
     return (
         <Container className="p-5" fluid>
             <Row>
                 <Col xs={12} md={5} lg={4} xl={3}>
                     <Stack gap={3}>
-                        <Stack
-                            as={Form}
-                            onSubmit={handleSubmit}
-                            direction="horizontal"
-                            gap={2}
-                        >
-                            <Form.Control
-                                placeholder="Write name here.."
-                                onChange={handleChange}
-                                value={search}
-                            />
-                            <Link to={search}>
-                                <Button>Search</Button>
-                            </Link>
-                        </Stack>
-                        {searched.length !== 0 && (
+                        <Form.Control
+                            placeholder="Write name here.."
+                            onChange={handleChange}
+                        />
+
+                        {employeesToShow.length !== 0 && (
                             <Row xs="auto">
-                                {searched.map((el) => (
-                                    <Col key={el.id}>
+                                {employeesToShow.map((el) => (
+                                    <Col key={el.id} className="mb-2 px-1">
                                         <Link to={'' + el.id}>
                                             <Button variant="outline-primary">
                                                 {el.name}
