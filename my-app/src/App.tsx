@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import { Employees, Search } from './components/index';
+
+import { Employees, Search } from './components/';
 
 function App() {
     return (

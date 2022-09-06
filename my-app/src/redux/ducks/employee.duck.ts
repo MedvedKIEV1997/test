@@ -1,8 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { createAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
+
+import { RootState } from '../store';
+import { fetchEmployee, fetchEmployees } from '../../api';
 
 export type Employee = {
     name: string;
@@ -18,18 +19,20 @@ export type GetEmployeePayload = {
     id: number;
 };
 
-type InitialState = {
+export type InitialState = {
     employee: Employee | null;
     allEmployees: Employee[];
     subordinates: number[];
     subordinatesToShow: Employee[];
+    loading: boolean;
 };
 
 const initialState: InitialState = {
     employee: null,
     allEmployees: [],
     subordinates: [],
-    subordinatesToShow: []
+    subordinatesToShow: [],
+    loading: true
 };
 
 const employeeSlice = createSlice({
@@ -50,11 +53,14 @@ const employeeSlice = createSlice({
                 ...payload
             ];
             state.subordinates = payload.map((el) => el.controls).flat();
+        },
+        setLoading: (state, { payload }: PayloadAction<boolean>) => {
+            state.loading = payload;
         }
     }
 });
 
-const sliceActions = employeeSlice.actions;
+export const sliceActions = employeeSlice.actions;
 
 export const selectEmployee = (state: RootState) => state.employee.employee;
 
@@ -67,6 +73,8 @@ export const selectSubordinates = (state: RootState) =>
 export const selectSubordinatesToShow = (state: RootState) =>
     state.employee.subordinatesToShow;
 
+export const selectLoading = (state: RootState) => state.employee.loading;
+
 export const searchEmployees =
     createAction<SearchEmployeesPayload>('searchEmployees');
 
@@ -76,10 +84,7 @@ export const getEmployees = createAction('getEmployees');
 
 function* getEmployeesAsync() {
     try {
-        const { data }: AxiosResponse<Employee[]> = yield call(
-            axios.get,
-            `http://localhost:8000/employees`
-        );
+        const { data }: AxiosResponse<Employee[]> = yield call(fetchEmployees);
         yield put(sliceActions.setEmployees(data));
     } catch (error) {
         console.log(error);
@@ -92,20 +97,17 @@ function* getEmployeeAsync(action: ReturnType<typeof getEmployee>) {
     } = action;
 
     try {
-        const { data }: AxiosResponse<Employee> = yield call(
-            axios.get,
-            `http://localhost:8000/employees/${id}`
-        );
+        const { data }: AxiosResponse<Employee> = yield call(fetchEmployee, id);
 
         yield put(sliceActions.setEmployee(data));
 
         yield* getSubordinatesAsync();
     } catch (error) {
         console.log(error);
+        yield put(sliceActions.setLoading(false));
     }
 }
 
-//I've tried to get the type
 function* getSubordinatesAsync(): any {
     try {
         const subordinates: ReturnType<typeof selectSubordinates> =
@@ -113,9 +115,7 @@ function* getSubordinatesAsync(): any {
 
         if (subordinates.length !== 0) {
             const response: AxiosResponse[] = yield all(
-                subordinates.map((id: number) =>
-                    call(axios.get, `http://localhost:8000/employees/${id}`)
-                )
+                subordinates.map((id: number) => call(fetchEmployee, id))
             );
 
             const subordinatesData: Employee[] = response.map((el) => el.data);
@@ -124,7 +124,9 @@ function* getSubordinatesAsync(): any {
 
             yield* getSubordinatesAsync();
         }
+        yield put(sliceActions.setLoading(false));
     } catch (error) {
+        yield put(sliceActions.setLoading(false));
         console.log(error);
     }
 }

@@ -1,17 +1,30 @@
-import { configureStore } from '@reduxjs/toolkit';
-import employeeReducer from './ducks/employee.duck';
+import {
+    combineReducers,
+    configureStore,
+    PreloadedState
+} from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
+
+import employeeReducer from './ducks/employee.duck';
 import { employeeSaga } from './ducks/employee.duck';
 
 const saga = createSagaMiddleware();
 
-export const store = configureStore({
-    reducer: {
-        employee: employeeReducer
-    },
-    middleware: [saga]
+const rootReducer = combineReducers({
+    employee: employeeReducer
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+    const store = configureStore({
+        reducer: rootReducer,
+        middleware: [saga],
+        preloadedState
+    });
+    return store;
+};
+export const store = setupStore();
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
 
 saga.run(employeeSaga);

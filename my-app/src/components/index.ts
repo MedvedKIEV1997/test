@@ -1,4 +1,4 @@
-import Employees from './employees.component';
-import Search from './search.component';
+import Employees from './Employees';
+import Search from './Search';
 
 export { Employees, Search };

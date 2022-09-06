@@ -1,9 +1,17 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+/**
+ * @jest-environment-options {"url": "http://localhost:8000/"}
+ */
+
+import { renderWithProviders } from './test-utils';
+
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+it('should render app', async () => {
+    const { asFragment } = await renderWithProviders(
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    );
+    expect(asFragment()).toMatchSnapshot();
 });
