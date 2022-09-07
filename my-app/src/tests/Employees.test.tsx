@@ -1,11 +1,11 @@
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
-import Employees from './Employees';
-import { renderWithProviders } from '../test-utils';
+import Employees from '../components/Employees';
+import { renderWithProviders } from './test-utils';
 import { initialState } from '../redux/ducks/employee.duck';
 
-describe('search component', () => {
+describe('employees component tests', () => {
     const setup = () => {
         return {
             user: userEvent.setup(),
@@ -42,7 +42,7 @@ describe('search component', () => {
         };
     };
 
-    it('matches snapshot', () => {
+    it('should match a snapshot', () => {
         const { asFragment } = setup();
         expect(asFragment()).toMatchSnapshot();
     });

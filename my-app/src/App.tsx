@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import { Employees, Search } from './components/';
 
-function App() {
+const App = () => {
     return (
         <Routes>
             <Route path="/" element={<Search />}>
@@ -10,6 +10,6 @@ function App() {
             </Route>
         </Routes>
     );
-}
+};
 
 export default App;
