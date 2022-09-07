@@ -1,12 +1,11 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Col, Form, Row, Stack } from 'react-bootstrap';
-import Button from 'react-bootstrap/esm/Button';
-import Container from 'react-bootstrap/esm/Container';
-
 import { Link, Outlet } from 'react-router-dom';
+import { Col, Form, Row, Stack, Container, Button } from 'react-bootstrap';
+
 import useActions from '../hooks/useActions';
 import useTypedSelector from '../hooks/useTypedSelectors';
 import { Employee, selectEmployees } from '../redux/ducks/employee.duck';
+import { CustomButton } from '../styled/search.styles';
 
 const Search = () => {
     const [employeesToShow, setEmployeesToShow] = useState<Employee[]>([]);
@@ -14,12 +13,12 @@ const Search = () => {
     const allEmployees = useTypedSelector(selectEmployees);
     const actions = useActions();
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setEmployeesToShow(
-            allEmployees.filter((el) =>
-                el.name
+            allEmployees.filter((employee) =>
+                employee.name
                     .toLocaleLowerCase()
-                    .includes(e.target.value.toLocaleLowerCase())
+                    .includes(event.target.value.toLocaleLowerCase())
             )
         );
     };
@@ -39,18 +38,28 @@ const Search = () => {
                 <Col xs={12} md={5} lg={4} xl={3}>
                     <Stack gap={3}>
                         <Form.Control
-                            placeholder="Write name here.."
+                            placeholder="Write name here..."
                             onChange={handleChange}
                         />
 
                         {employeesToShow.length !== 0 && (
-                            <Row xs="auto">
-                                {employeesToShow.map((el) => (
-                                    <Col key={el.id} className="mb-2 px-1">
-                                        <Link to={'' + el.id}>
-                                            <Button variant="outline-primary">
-                                                {el.name}
-                                            </Button>
+                            <Row className="g-2 ">
+                                {employeesToShow.map((employee) => (
+                                    <Col
+                                        xl={3}
+                                        md={4}
+                                        sm={2}
+                                        xs={4}
+                                        key={employee.id}
+                                        className="d-flex"
+                                    >
+                                        <Link
+                                            to={'' + employee.id}
+                                            className="w-100"
+                                        >
+                                            <CustomButton variant="outline-primary">
+                                                {employee.name}
+                                            </CustomButton>
                                         </Link>
                                     </Col>
                                 ))}
