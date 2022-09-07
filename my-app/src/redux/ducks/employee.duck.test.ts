@@ -1,22 +1,8 @@
-import reducer, { InitialState, sliceActions } from './employee.duck';
-
-const initialState: InitialState = {
-    employee: null,
-    allEmployees: [],
-    subordinates: [],
-    subordinatesToShow: [],
-    loading: true
-};
+import reducer, { initialState, sliceActions } from './employee.duck';
 
 describe('employeeSlice tests', () => {
     test('should return the initial state', () => {
-        expect(reducer(undefined, { type: undefined })).toEqual({
-            employee: null,
-            allEmployees: [],
-            subordinates: [],
-            subordinatesToShow: [],
-            loading: true
-        });
+        expect(reducer(undefined, { type: undefined })).toEqual(initialState);
     });
 
     test('should set employee and his subordinates', () => {

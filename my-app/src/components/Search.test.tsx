@@ -1,7 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react';
-import { renderWithProviders } from '../test-utils';
+import { Router } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
+import { createMemoryHistory } from 'history';
+
 import Search from './Search';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { renderWithProviders } from '../test-utils';
+import { initialState } from '../redux/ducks/employee.duck';
 const employees = [
     {
         name: 'Doug Lime',
@@ -51,13 +55,40 @@ const employees = [
 ];
 
 describe('search component', () => {
-    renderWithProviders(
-        <Router>
-            <Search />
-        </Router>
-    );
-    it('renders searchbar', () => {
+    const setup = () => {
+        const history = createMemoryHistory();
+        return {
+            user: userEvent.setup(),
+            ...renderWithProviders(
+                <Router location={history.location} navigator={history}>
+                    <Search />
+                </Router>,
+                {
+                    preloadedState: {
+                        employee: {
+                            ...initialState,
+                            allEmployees: employees
+                        }
+                    }
+                }
+            )
+        };
+    };
+
+    it('matches snapshot', () => {
+        const { asFragment } = setup();
+        expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('filters all employees', async () => {
+        const { user } = setup();
         const searchBar = screen.getByPlaceholderText(/Write name here/i);
-        expect(searchBar).toBeInTheDocument();
+        await user.type(searchBar, 'lin');
+        expect(
+            screen.queryByRole('button', { name: 'Dew Kelg' })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: 'Lin Cheng' })
+        ).toBeInTheDocument();
     });
 });

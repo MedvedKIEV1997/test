@@ -1,12 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 import { render } from '@testing-library/react';
 import type { RenderOptions } from '@testing-library/react';
-import { configureStore, PreloadedState } from '@reduxjs/toolkit';
+import { PreloadedState } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-
 import { AppStore, RootState, setupStore } from './redux/store';
-
-import employeeReducer from './redux/ducks/employee.duck';
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
     preloadedState?: PreloadedState<RootState>;

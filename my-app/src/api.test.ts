@@ -1,7 +1,3 @@
-/**
- * @jest-environment-options {"url": "http://localhost:8000/"}
- */
-
 import { fetchEmployee, fetchEmployees } from './api';
 
 describe('api testing', () => {

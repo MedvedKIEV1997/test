@@ -27,7 +27,7 @@ export type InitialState = {
     loading: boolean;
 };
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
     employee: null,
     allEmployees: [],
     subordinates: [],
