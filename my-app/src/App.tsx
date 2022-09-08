@@ -1,16 +1,13 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Employees from "./routes/employees/employees";
-import Search from "./routes/search";
+import { Routes, Route } from 'react-router-dom';
 
-function App() {
-  return (
+import { Employees, Search } from './components/';
+
+const App = () => (
     <Routes>
-      <Route path="/" element={<Search />}>
-        <Route path="/:name" element={<Employees />} />
-      </Route>
+        <Route path="/" element={<Search />}>
+            <Route path="/:id" element={<Employees />} />
+        </Route>
     </Routes>
-  );
-}
+);
 
 export default App;
