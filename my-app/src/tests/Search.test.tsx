@@ -1,7 +1,5 @@
 import { screen } from '@testing-library/react';
-import { Router } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory } from 'history';
 
 import Search from '../components/Search';
 import { employees, renderWithProviders } from './test-utils';
@@ -9,22 +7,16 @@ import { initialState } from '../redux/ducks/employee.duck';
 
 describe('search component tests', () => {
     const setup = () => {
-        const history = createMemoryHistory();
         return {
             user: userEvent.setup(),
-            ...renderWithProviders(
-                <Router location={history.location} navigator={history}>
-                    <Search />
-                </Router>,
-                {
-                    preloadedState: {
-                        employee: {
-                            ...initialState,
-                            allEmployees: employees
-                        }
+            ...renderWithProviders(<Search />, {
+                preloadedState: {
+                    employee: {
+                        ...initialState,
+                        allEmployees: employees
                     }
                 }
-            )
+            })
         };
     };
 

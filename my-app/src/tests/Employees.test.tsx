@@ -1,4 +1,3 @@
-import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 import Employees from '../components/Employees';
@@ -9,36 +8,31 @@ describe('employees component tests', () => {
     const setup = () => {
         return {
             user: userEvent.setup(),
-            ...renderWithProviders(
-                <MemoryRouter>
-                    <Employees />
-                </MemoryRouter>,
-                {
-                    preloadedState: {
+            ...renderWithProviders(<Employees />, {
+                preloadedState: {
+                    employee: {
+                        ...initialState,
+                        loading: false,
                         employee: {
-                            ...initialState,
-                            loading: false,
-                            employee: {
-                                name: 'Bob',
-                                controls: [5, 6],
-                                id: 11
+                            name: 'Bob',
+                            controls: [5, 6],
+                            id: 11
+                        },
+                        subordinatesToShow: [
+                            {
+                                name: 'Leam',
+                                controls: [],
+                                id: 5
                             },
-                            subordinatesToShow: [
-                                {
-                                    name: 'Leam',
-                                    controls: [],
-                                    id: 5
-                                },
-                                {
-                                    name: 'Caren',
-                                    controls: [],
-                                    id: 6
-                                }
-                            ]
-                        }
+                            {
+                                name: 'Caren',
+                                controls: [],
+                                id: 6
+                            }
+                        ]
                     }
                 }
-            )
+            })
         };
     };
 
