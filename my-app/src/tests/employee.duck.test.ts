@@ -1,11 +1,14 @@
-import reducer, { initialState, sliceActions } from './employee.duck';
+import reducer, {
+    initialState,
+    sliceActions
+} from '../redux/ducks/employee.duck';
 
-describe('employeeSlice tests', () => {
-    test('should return the initial state', () => {
+describe('employee slice tests', () => {
+    it('should return the initial state', () => {
         expect(reducer(undefined, { type: undefined })).toEqual(initialState);
     });
 
-    test('should set employee and his subordinates', () => {
+    it('should set employee and his subordinates', () => {
         expect(
             reducer(
                 initialState,
@@ -29,7 +32,7 @@ describe('employeeSlice tests', () => {
         });
     });
 
-    test('should set employees', () => {
+    it('should set employees', () => {
         expect(
             reducer(
                 initialState,
@@ -66,7 +69,7 @@ describe('employeeSlice tests', () => {
             loading: true
         });
     });
-    test('should set subordinatesToShow', () => {
+    it('should set subordinatesToShow', () => {
         expect(
             reducer(
                 initialState,
@@ -103,7 +106,7 @@ describe('employeeSlice tests', () => {
             loading: true
         });
     });
-    test('should set loading to false', () => {
+    it('should set loading to false', () => {
         expect(reducer(initialState, sliceActions.setLoading(false))).toEqual({
             employee: null,
             allEmployees: [],

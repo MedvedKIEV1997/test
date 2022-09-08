@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`search component matches snapshot 1`] = `
+exports[`employees component tests should match a snapshot 1`] = `
 <DocumentFragment>
   <div
     class="my-5 position-relative container"

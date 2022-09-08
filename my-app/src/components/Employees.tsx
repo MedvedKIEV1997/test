@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import {
-    Button,
-    Toast,
-    ToastContainer,
-    Container,
-    Placeholder
-} from 'react-bootstrap';
+import { Button, Toast, ToastContainer, Container } from 'react-bootstrap';
 
+import EmployeesPlaceholder from './EmployeesPlaceholder';
 import { MainText, SecondaryText } from '../styled/employees.styles';
 import useTypedSelector from '../hooks/useTypedSelectors';
 import {
@@ -33,30 +28,7 @@ const Employees = () => {
     }, [id]);
 
     if (isLoading) {
-        return (
-            <Container className="my-5 position-relative">
-                <Placeholder as={MainText} animation="glow">
-                    <Placeholder xs={4} />
-                </Placeholder>
-                <Placeholder as={SecondaryText} animation="glow">
-                    <Placeholder xs={3} />
-                </Placeholder>
-                <Placeholder as={MainText} animation="glow">
-                    <Placeholder xs={4} />
-                </Placeholder>
-                <Placeholder as={SecondaryText} animation="glow">
-                    <Placeholder xs={2} /> <Placeholder xs={3} />{' '}
-                    <Placeholder xs={2} />
-                </Placeholder>
-
-                <Placeholder.Button
-                    className="position-absolute top-0 end-0"
-                    animation="glow"
-                >
-                    Copy this URL
-                </Placeholder.Button>
-            </Container>
-        );
+        return <EmployeesPlaceholder />;
     } else {
         return (
             <Container className="my-5 position-relative">

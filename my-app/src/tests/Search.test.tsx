@@ -1,60 +1,13 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 
-import Search from './Search';
-import { renderWithProviders } from '../test-utils';
+import Search from '../components/Search';
+import { employees, renderWithProviders } from './test-utils';
 import { initialState } from '../redux/ducks/employee.duck';
-const employees = [
-    {
-        name: 'Doug Lime',
-        controls: [2, 3],
-        id: 1
-    },
-    {
-        name: 'Lin Cheng',
-        controls: [4, 5, 6],
-        id: 2
-    },
-    {
-        name: 'Bob Welp',
-        controls: [7, 8, 9],
-        id: 3
-    },
-    {
-        name: 'Dakota Stein',
-        controls: [],
-        id: 4
-    },
-    {
-        name: 'Mongo K',
-        controls: [],
-        id: 5
-    },
-    {
-        name: 'Dew Dong',
-        controls: [],
-        id: 6
-    },
-    {
-        name: 'Mort Dog',
-        controls: [],
-        id: 7
-    },
-    {
-        name: 'Forman Go',
-        controls: [],
-        id: 8
-    },
-    {
-        name: 'Dew Kelg',
-        controls: [],
-        id: 9
-    }
-];
 
-describe('search component', () => {
+describe('search component tests', () => {
     const setup = () => {
         const history = createMemoryHistory();
         return {
@@ -75,20 +28,26 @@ describe('search component', () => {
         };
     };
 
-    it('matches snapshot', () => {
+    it('should match a snapshot', () => {
         const { asFragment } = setup();
         expect(asFragment()).toMatchSnapshot();
     });
 
-    it('filters all employees', async () => {
+    it('should filter all employees and get Link "Lin Cheng"', async () => {
+        const { user } = setup();
+        const searchBar = screen.getByPlaceholderText(/Write name here/i);
+        await user.type(searchBar, 'lin');
+        expect(
+            screen.getByRole('button', { name: 'Lin Cheng' })
+        ).toBeInTheDocument();
+    });
+
+    it('should filter all employees and do not find Link "Dew Kelg"', async () => {
         const { user } = setup();
         const searchBar = screen.getByPlaceholderText(/Write name here/i);
         await user.type(searchBar, 'lin');
         expect(
             screen.queryByRole('button', { name: 'Dew Kelg' })
         ).not.toBeInTheDocument();
-        expect(
-            screen.getByRole('button', { name: 'Lin Cheng' })
-        ).toBeInTheDocument();
     });
 });
