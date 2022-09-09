@@ -5,3 +5,7 @@ export const CustomButton = styled(Button)`
     height: 60px;
     width: 100%;
 `;
+
+export const TableButton = styled(Button)`
+    min-width: max-content;
+`;

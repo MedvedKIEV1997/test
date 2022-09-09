@@ -16,5 +16,10 @@
         "noEmit": true,
         "jsx": "react-jsx"
     },
-    "include": ["**/*.ts", "**/*.tsx", "src/components/Search.test.jsx"]
+    "include": [
+        "**/*.ts",
+        "**/*.tsx",
+        "src/components/Search.test.jsx",
+        "src/components/EmployeesTable.jsx"
+    ]
 }

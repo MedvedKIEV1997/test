@@ -5,7 +5,7 @@ import { Col, Form, Row, Stack, Container, Button } from 'react-bootstrap';
 import useActions from '../hooks/useActions';
 import useTypedSelector from '../hooks/useTypedSelectors';
 import { Employee, selectEmployees } from '../redux/ducks/employee.duck';
-import { CustomButton } from '../styled/search.styles';
+import { CustomButton, TableButton } from '../styled/search.styles';
 
 const Search = () => {
     const [employeesToShow, setEmployeesToShow] = useState<Employee[]>([]);
@@ -37,10 +37,17 @@ const Search = () => {
             <Row>
                 <Col xs={12} md={5} lg={4} xl={3}>
                     <Stack gap={3}>
-                        <Form.Control
-                            placeholder="Write name here..."
-                            onChange={handleChange}
-                        />
+                        <Stack gap={3} direction="horizontal">
+                            <Form.Control
+                                placeholder="Write name here..."
+                                onChange={handleChange}
+                            />
+                            <Link to="table">
+                                <TableButton className="w-100">
+                                    To Table
+                                </TableButton>
+                            </Link>
+                        </Stack>
 
                         {employeesToShow.length !== 0 && (
                             <Row className="g-2 ">
