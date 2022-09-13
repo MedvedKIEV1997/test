@@ -1,0 +1,13 @@
+services:
+    frontend:
+        build: ./my-app
+        ports:
+            - '3000:3000'
+        volumes:
+            - ./my-app/src:/app/src
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+    backend:
+        build: ./api
+        ports:
+            - '8000:8000'

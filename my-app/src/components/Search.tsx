@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Col, Form, Row, Stack, Container, Button } from 'react-bootstrap';
+import { Col, Form, Row, Stack, Container } from 'react-bootstrap';
 
 import useActions from '../hooks/useActions';
 import useTypedSelector from '../hooks/useTypedSelectors';
