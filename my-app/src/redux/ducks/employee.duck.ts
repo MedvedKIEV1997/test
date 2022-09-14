@@ -1,9 +1,18 @@
-import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
+import {
+    createSlice,
+    PayloadAction,
+    createAction,
+    Action
+} from '@reduxjs/toolkit';
+import { Observable, from } from 'rxjs';
+import { filter, map, mergeMap, catchError } from 'rxjs/operators';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
+import { combineEpics } from 'redux-observable';
 
 import { RootState } from '../store';
 import { fetchEmployee, fetchEmployees } from '../../api';
+import { ofType } from 'redux-observable/dist/types/operators';
 
 export type Employee = {
     name: string;
@@ -139,7 +148,21 @@ function* watchGetEmployees() {
 }
 
 export function* employeeSaga() {
-    yield all([call(watchGetEmployee), call(watchGetEmployees)]);
+    yield all([
+        call(watchGetEmployee)
+        //  call(watchGetEmployees)
+    ]);
 }
+const getEmployeesEpic = (action$: any) =>
+    action$.pipe(
+        filter(getEmployees.match),
+        mergeMap((action) =>
+            from(fetchEmployees()).pipe(
+                map((response) => sliceActions.setEmployees(response.data))
+            )
+        )
+    );
+
+export const employeeEpic = getEmployeesEpic;
 
 export default employeeSlice.reducer;

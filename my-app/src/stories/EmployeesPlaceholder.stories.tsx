@@ -1,6 +1,3 @@
-// YourComponent.stories.ts|tsx
-
-import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
