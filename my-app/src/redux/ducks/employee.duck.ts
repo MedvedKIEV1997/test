@@ -1,18 +1,10 @@
-import {
-    createSlice,
-    PayloadAction,
-    createAction,
-    Action
-} from '@reduxjs/toolkit';
-import { Observable, from } from 'rxjs';
-import { filter, map, mergeMap, catchError } from 'rxjs/operators';
-import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import { AxiosResponse } from 'axios';
-import { combineEpics } from 'redux-observable';
+import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
+import { from } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { combineEpics, StateObservable } from 'redux-observable';
 
 import { RootState } from '../store';
 import { fetchEmployee, fetchEmployees } from '../../api';
-import { ofType } from 'redux-observable/dist/types/operators';
 
 export type Employee = {
     name: string;
@@ -57,11 +49,7 @@ const employeeSlice = createSlice({
             state.allEmployees = payload;
         },
         setSubordinates: (state, { payload }: PayloadAction<Employee[]>) => {
-            state.subordinatesToShow = [
-                ...state.subordinatesToShow,
-                ...payload
-            ];
-            state.subordinates = payload.map((el) => el.controls).flat();
+            state.subordinatesToShow = [...payload];
         },
         setLoading: (state, { payload }: PayloadAction<boolean>) => {
             state.loading = payload;
@@ -84,85 +72,97 @@ export const selectSubordinatesToShow = (state: RootState) =>
 
 export const selectLoading = (state: RootState) => state.employee.loading;
 
-export const searchEmployees =
-    createAction<SearchEmployeesPayload>('searchEmployees');
-
 export const getEmployee = createAction<GetEmployeePayload>('getEmployee');
 
 export const getEmployees = createAction('getEmployees');
 
-function* getEmployeesAsync() {
+export const getSubordinates = createAction('getSubordinates');
+
+const getAllSubordinatesToShow = async (subordinates: number[]) => {
+    const allSubordinates: Employee[] = [];
+
     try {
-        const { data }: AxiosResponse<Employee[]> = yield call(fetchEmployees);
-        yield put(sliceActions.setEmployees(data));
+        const gettingSubs = async (subordinates: number[]) => {
+            if (subordinates.length !== 0) {
+                const response = await Promise.all(
+                    subordinates.map(
+                        async (id: number) => await fetchEmployee(id)
+                    )
+                );
+
+                const subordinatesData: Employee[] = response.map(
+                    (el) => el.data
+                );
+                const subordinatesOfSubordinates = subordinatesData
+                    .map((subordinate) => subordinate.controls)
+                    .flat();
+
+                allSubordinates.push(...subordinatesData);
+
+                await gettingSubs(subordinatesOfSubordinates);
+            }
+        };
+        await gettingSubs(subordinates);
+        console.log(allSubordinates);
+        return allSubordinates;
     } catch (error) {
         console.log(error);
+        return [];
     }
-}
+};
 
-function* getEmployeeAsync(action: ReturnType<typeof getEmployee>) {
-    const {
-        payload: { id }
-    } = action;
+const getLoadingFalseEpic = (action$: any) =>
+    action$.pipe(
+        filter(sliceActions.setSubordinates.match),
+        map(() => sliceActions.setLoading(false))
+    );
 
-    try {
-        const { data }: AxiosResponse<Employee> = yield call(fetchEmployee, id);
+const getLoadingTrueEpic = (action$: any) =>
+    action$.pipe(
+        filter(getEmployee.match),
+        map(() => sliceActions.setLoading(true))
+    );
 
-        yield put(sliceActions.setEmployee(data));
-
-        yield* getSubordinatesAsync();
-    } catch (error) {
-        console.log(error);
-        yield put(sliceActions.setLoading(false));
-    }
-}
-
-function* getSubordinatesAsync(): any {
-    try {
-        const subordinates: ReturnType<typeof selectSubordinates> =
-            yield select(selectSubordinates);
-
-        if (subordinates.length !== 0) {
-            const response: AxiosResponse[] = yield all(
-                subordinates.map((id: number) => call(fetchEmployee, id))
+const getSubordinatesEpic = (
+    action$: any,
+    state$: StateObservable<RootState>
+) =>
+    action$.pipe(
+        filter(sliceActions.setEmployee.match),
+        switchMap(async () => {
+            const subordinates = await getAllSubordinatesToShow(
+                state$.value.employee.subordinates
             );
+            return sliceActions.setSubordinates(subordinates);
+        })
+    );
 
-            const subordinatesData: Employee[] = response.map((el) => el.data);
+const getEmployeeEpic = (action$: any) =>
+    action$.pipe(
+        filter(getEmployee.match),
+        switchMap((action: ReturnType<typeof getEmployee>) =>
+            from(fetchEmployee(action.payload.id)).pipe(
+                map((res) => sliceActions.setEmployee(res.data))
+            )
+        )
+    );
 
-            yield put(sliceActions.setSubordinates(subordinatesData));
-
-            yield* getSubordinatesAsync();
-        }
-        yield put(sliceActions.setLoading(false));
-    } catch (error) {
-        yield put(sliceActions.setLoading(false));
-        console.log(error);
-    }
-}
-
-function* watchGetEmployee() {
-    yield takeLatest(getEmployee.type, getEmployeeAsync);
-}
-function* watchGetEmployees() {
-    yield takeLatest(getEmployees.type, getEmployeesAsync);
-}
-
-export function* employeeSaga() {
-    yield all([
-        call(watchGetEmployee)
-        //  call(watchGetEmployees)
-    ]);
-}
 const getEmployeesEpic = (action$: any) =>
     action$.pipe(
         filter(getEmployees.match),
-        mergeMap((action) =>
+        switchMap(() =>
             from(fetchEmployees()).pipe(
                 map((response) => sliceActions.setEmployees(response.data))
             )
         )
     );
 
-export const employeeEpic = getEmployeesEpic;
+export const employeeEpic = combineEpics(
+    getEmployeesEpic,
+    getEmployeeEpic,
+    getSubordinatesEpic,
+    getLoadingTrueEpic,
+    getLoadingFalseEpic
+);
 
 export default employeeSlice.reducer;

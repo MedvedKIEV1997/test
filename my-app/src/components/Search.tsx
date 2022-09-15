@@ -11,6 +11,7 @@ const Search = () => {
     const [employeesToShow, setEmployeesToShow] = useState<Employee[]>([]);
 
     const allEmployees = useTypedSelector(selectEmployees);
+
     const actions = useActions();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

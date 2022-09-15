@@ -1,16 +1,15 @@
 import {
+    Action,
     combineReducers,
     configureStore,
     PreloadedState
 } from '@reduxjs/toolkit';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
-import createSagaMiddleware from 'redux-saga';
 
 import employeeReducer from './ducks/employee.duck';
-import { employeeSaga, employeeEpic } from './ducks/employee.duck';
+import { employeeEpic } from './ducks/employee.duck';
 
-const saga = createSagaMiddleware();
-const epic = createEpicMiddleware();
+const epic = createEpicMiddleware<Action<any>, Action<any>, RootState, any>();
 
 const rootEpic = combineEpics(employeeEpic);
 
@@ -21,7 +20,7 @@ const rootReducer = combineReducers({
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
     const store = configureStore({
         reducer: rootReducer,
-        middleware: [saga, epic],
+        middleware: [epic],
         preloadedState
     });
     return store;
@@ -31,5 +30,4 @@ export const store = setupStore();
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof setupStore>;
 
-saga.run(employeeSaga);
 epic.run(rootEpic);
